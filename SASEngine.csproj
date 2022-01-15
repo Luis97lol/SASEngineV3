@@ -10,10 +10,17 @@
     <ApplicationIcon>SASEngine.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="lib\**" />
+    <Compile Remove="Properties\**" />
     <EmbeddedResource Remove="lib\**" />
+    <EmbeddedResource Remove="Properties\**" />
     <None Remove="lib\**" />
+    <None Remove="Properties\**" />
   </ItemGroup>
 
 </Project>

@@ -77,27 +77,29 @@ namespace SASEngine
 
         private static void LoadPlugin(string name)
         {
-            foreach (var plugin in Directory.GetDirectories(pluginspath, name))
+            try
             {
+                var plugin = Directory.GetDirectories(pluginspath, name);
+                if (plugin.Length == 0) throw new Exception(String.Format(@"The plugin ""{0}"" was not found",name));
                 AssemblyLoadContext alc = new AssemblyLoadContext(name, true);
                 try
                 {
-                    foreach (var dep in Directory.GetFiles(plugin + "\\dependencies", "*.dll"))
+                    foreach (var dep in Directory.GetFiles(plugin[0] + "\\dependencies", "*.dll"))
                     {
                         alc.LoadFromAssemblyPath(dep);
                     }
                 }
-                catch { }
+                catch (Exception ex) { Console.WriteLine(ex); }
 
-                Assembly asm = alc.LoadFromAssemblyPath(Directory.GetFiles(plugin, "*.dll")[0]);
+                Assembly asm = alc.LoadFromAssemblyPath(Directory.GetFiles(plugin[0], "*.dll")[0]);
                 IPlugin app = Activator.CreateInstance(asm.GetTypes()[0]) as IPlugin;
                 Task.Run(async () =>
                 {
                     await app.start();
                 });
-                Console.WriteLine("El plugin no detiene la consola");
                 listPlugins.Add(name, new ALCApp(alc, app));
             }
+            catch(Exception ex) { Console.WriteLine(ex); }
         }
 
         class ALCApp
